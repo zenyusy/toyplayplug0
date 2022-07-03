@@ -1,3 +1,9 @@
+local M = {
+    buff = nil,
+    winn = nil,
+    data = {},
+}
+
 local function setup_view()
     -- create a scratch unlisted buffer
     local bufnr = vim.api.nvim_create_buf(false, true)
@@ -81,11 +87,26 @@ local function getdata()
     return mysplit(s)
 end
 
-local function setup()
-    local d = {buff=nil,winn=nil}
-    d.buff, d.winn = setup_view()
-    write_it(d.buff, getdata())
+function M.setup()
+    if M.buff ~= nil then
+        return
+    end
+    M.buff, M.winn = setup_view()
+    vim.api.nvim_buf_attach(M.buff, false, {
+        on_detach = function(_, _)
+            M.buff = nil
+            M.winn = nil
+            M.data = {}
+        end,
+    })
+    M.data = getdata()
+    vim.api.nvim_buf_set_keymap(M.buff, 'n', 'x', "<Cmd>lua require'toyplayplug0'.actx()<CR>", {silent=true,noremap=true})
+    write_it(M.buff, M.data)
     -- print(1+2)
 end
 
-return {setup=setup}
+function M.actx()
+    vim.fn.setreg('9', 'Hello ' .. M.data[vim.api.nvim_win_get_cursor(M.winn)[1]])
+end
+
+return M
