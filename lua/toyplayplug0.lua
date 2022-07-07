@@ -35,6 +35,8 @@ local function setup_view()
 end
 
 local function write_it(bufnr, lines)
+    -- vim.fn.expand('%:t') = filename only
+    -- vim.api.nvim_buf_get_option(bufnr, 'modified') -> bool
     if vim.api.nvim_buf_is_valid(bufnr) and string.match(vim.api.nvim_buf_get_name(bufnr), 'ToyPlayPlug0') ~= nil and vim.api.nvim_buf_get_option(bufnr, 'filetype') == 'ToyPlayPlug0' then
         vim.api.nvim_buf_set_option(bufnr, 'modifiable', true)
         vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
